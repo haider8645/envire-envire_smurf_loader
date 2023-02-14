@@ -1,0 +1,17 @@
+<package>
+  <description brief="Loader library for the SMURF Robot description format">
+
+  </description>
+  <author>Janosch Machowinski/Janosch.Machowinski@dfki.de</author>
+  <license></license>
+  <url>http://</url>
+  <logo>http://</logo>
+  <depend package="base/cmake" />
+  <depend package="base/types" />
+  <depend package="control/urdfdom" />
+  <depend package="control/urdfdom_headers" />
+  <depend package="envire/envire_core" />
+  <!--depend package="envire/envire_base_types" /-->
+  <depend package="simulation/configmaps" />
+  <rosdep name="boost" />
+</package>
