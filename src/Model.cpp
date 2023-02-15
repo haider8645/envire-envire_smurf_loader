@@ -207,7 +207,21 @@ namespace smurf_loader
 
             // fill the config with collision information
             configmaps::ConfigMap collisionMap;
+
+            // add additional collision information from smurf
+            // note: the keys of collisionMap, that were set before, may be overwriten here
+            for (configmaps::ConfigVector::iterator it = smurfMap["collision"].begin(); it != smurfMap["collision"].end(); ++it)
+            {
+                configmaps::ConfigMap &config = *it;
+                if (config["name"].toString() == collision->name && config["link"].toString() == link->name)
+                {
+                    collisionMap.append(config);
+                }
+            }
+
+            // fill the config with collision information
             collisionMap["name"] = collision->name;
+            collisionMap["link"] = link->name;
 
             // add geometry information
             if (fillGeometryConfig(collision->geometry, collisionMap) == false)
