@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     envire::core::FrameId rootFrame("INIT_FRAME");
     graph->addFrame(rootFrame);
 
-    smurf_loader::Model model;
+    envire::smurf_loader::Model model;
     model.loadFromSmurf(graph, rootFrame, smurf_file);
 
     configmaps::ConfigMap mmap;
