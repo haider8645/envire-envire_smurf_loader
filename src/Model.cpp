@@ -170,14 +170,13 @@ namespace envire
 
                 // create link object to store it in the graph
                 configmaps::ConfigMap linkMap;
-                linkMap["name"] = linkPair.first;
-                linkMap["type"] = "Link";
+                linkMap["name"] = linkFrame;
 
-                std::string className(BASE_TYPES_NAMESPACE + linkMap["type"].toString());
+                std::string className(BASE_TYPES_NAMESPACE + std::string("Link"));
                 envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, linkMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add link " << linkMap["name"].toString()
-                                << ", probably the link type " << linkMap["type"].toString() << " is not registered.";
+                                << ", probably the link type " << "Link" << " is not registered.";
                     return;
                 }
                 graph->addItemToFrame(linkFrame, item);
