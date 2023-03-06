@@ -50,7 +50,7 @@ namespace envire
             return rootFrame;
         }
 
-        void Model::loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrameId,
+        void Model::loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrame,
                                 const std::string &filePath, const std::string &prefix)
         {
             this->prefix = prefix;
@@ -83,13 +83,31 @@ namespace envire
                 name = prefix + smurfMap["modelname"].toString();
             }
 
-            if (graph->containsFrame(parentFrameId) == false)
+            if (graph->containsFrame(parentFrame) == false)
             {
-                LOG_ERROR_S << "The graph does not contain the frame with id: " << parentFrameId;
+                LOG_ERROR_S << "The graph does not contain the frame with id: " << parentFrame;
                 return;
             }
 
-            loadStructure(graph, parentFrameId);
+            // add new frame for the world
+            envire::core::FrameId worldFrame = "World::" + prefix;
+            graph->addFrame(worldFrame);
+            // TODO: add init pose into the function parameter
+            envire::core::Transform initPose;
+            initPose.setIdentity();
+            graph->addTransform(parentFrame, worldFrame, initPose);
+
+            std::cout << "------------- ADD WORLD FRAME " << worldFrame << std::endl;
+
+            // add world into the world frame
+            configmaps::ConfigMap worldMap;
+            worldMap["name"] = worldFrame;
+            worldMap["prefix"] = prefix;
+            std::string className(BASE_TYPES_NAMESPACE + std::string("World"));
+            envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, worldMap);
+            graph->addItemToFrame(worldFrame, item);
+
+            loadStructure(graph, worldFrame);
 
             loadLinks(graph);
             loadJoints(graph);
@@ -98,10 +116,7 @@ namespace envire
         }
 
         void Model::loadStructure(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrame) {
-            // add root frame to the graph
-            // TODO: add init pose
-            envire::core::Transform initPose;
-            initPose.setIdentity();
+
 
             // parse all links and create a new frame for each link in the graph
             for(std::pair<std::string, urdf::LinkSharedPtr> linkPair: urdfModel->links_)
@@ -113,6 +128,8 @@ namespace envire
                 // find root link, attach the root frame to parent frame with initPose transformation
                 if (linkPair.first == urdfModel->getRoot()->name)
                 {
+                    envire::core::Transform initPose;
+                    initPose.setIdentity();
                     rootFrame = linkFrame;
                     graph->addTransform(parentFrame, linkFrame, initPose);
                 }
@@ -176,7 +193,7 @@ namespace envire
                 envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, linkMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add link " << linkMap["name"].toString()
-                                << ", probably the link type " << "Link" << " is not registered.";
+                                << ", probably the link type " << className << " is not registered.";
                     return;
                 }
                 graph->addItemToFrame(linkFrame, item);
@@ -211,7 +228,7 @@ namespace envire
                 // set material information
                 urdf::MaterialSharedPtr urdfMaterial = visual->material;
                 if (urdfMaterial != nullptr) {
-                    visualMap["material"]["name"] = visualFrame + "_" + urdfMaterial->name;
+                    visualMap["material"]["name"] = prefix + "_" + urdfMaterial->name;
                     visualMap["material"]["textureFilename"] = urdfMaterial->texture_filename;
 
                     // diffuse color is set over urdf::Visual from urdf file
@@ -310,7 +327,6 @@ namespace envire
             // fill the config with inertia information
             configmaps::ConfigMap inertiaMap;
             inertiaMap["name"] = link->name;
-            inertiaMap["type"] = "Inertia";
             inertiaMap["mass"] = urdfInetrial->mass;
             inertiaMap["xx"] = urdfInetrial->ixx;
             inertiaMap["xy"] = urdfInetrial->ixy;
@@ -320,11 +336,11 @@ namespace envire
             inertiaMap["zz"] = urdfInetrial->izz;
 
             // create and add into the graph envire item with the object corresponding to config type
-            std::string className(BASE_TYPES_NAMESPACE + inertiaMap["type"].toString());
+            std::string className(BASE_TYPES_NAMESPACE + std::string("Inertial"));
             envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, inertiaMap);
             if (!item) {
                 LOG_ERROR_S << "Can not add inertia " << inertiaMap["name"].toString()
-                            << ", probably the inertia type " << inertiaMap["type"].toString() << " is not registered.";
+                            << ", probably the inertia type " << className << " is not registered.";
                 return;
             }
             graph->addItemToFrame(inertiaFrame, item);

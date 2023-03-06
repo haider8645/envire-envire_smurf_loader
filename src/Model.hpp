@@ -39,7 +39,7 @@ namespace envire {
 
             const std::string& getUrdfFilePath() const;
 
-            void loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrameId,
+            void loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrame,
                                 const std::string &filePath, const std::string &prefix = "");
 
         private:
