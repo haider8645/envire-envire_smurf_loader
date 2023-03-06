@@ -407,7 +407,12 @@ namespace envire
                 {
                     urdf::MeshSharedPtr urdfGeom = urdf::dynamic_pointer_cast<urdf::Mesh>(geometry);
                     config["type"] = "Mesh";
-                    config["filename"] = urdfGeom->filename;
+                    // create absolute path
+                    boost::filesystem::path filePathAbsolute(urdfFilePathAbsolute);
+                    std::string rootFolder = filePathAbsolute.parent_path().generic_string();
+                    // TODO: check if urdfGeom->filename is absolute or relative
+                    std::string filename = rootFolder + "/" + urdfGeom->filename;
+                    config["filename"] = filename;
                     config["scale"]["x"] = urdfGeom->scale.x;
                     config["scale"]["y"] = urdfGeom->scale.y;
                     config["scale"]["z"] = urdfGeom->scale.z;
