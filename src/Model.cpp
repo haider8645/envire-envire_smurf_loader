@@ -51,7 +51,10 @@ namespace envire
         }
 
         void Model::loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrame,
-                                const std::string &filePath, const std::string &prefix)
+                                const std::string &filePath,
+                                const base::Position &position,
+                                const base::Orientation &orientation,
+                                const std::string &prefix)
         {
             this->prefix = prefix;
             // Load model from file
@@ -90,11 +93,10 @@ namespace envire
             }
 
             // add new frame for the world
+            // TODO: do we need World:: ?
             envire::core::FrameId worldFrame = "World::" + prefix;
             graph->addFrame(worldFrame);
-            // TODO: add init pose into the function parameter
-            envire::core::Transform initPose;
-            initPose.setIdentity();
+            envire::core::Transform initPose(position, orientation);
             graph->addTransform(parentFrame, worldFrame, initPose);
 
             std::cout << "------------- ADD WORLD FRAME " << worldFrame << std::endl;

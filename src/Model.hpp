@@ -7,6 +7,7 @@
 #include <urdf_model/pose.h>
 
 #include <envire_core/graph/EnvireGraph.hpp>
+#include <envire_core/items/Transform.hpp>
 
 // TODO: can we use smurf loader for urdf too: loadFromUrdf
 // TODO: add option to load full graph urdf structure, so each link willbe place in extra frame
@@ -39,8 +40,12 @@ namespace envire {
 
             const std::string& getUrdfFilePath() const;
 
-            void loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph, const envire::core::FrameId &parentFrame,
-                                const std::string &filePath, const std::string &prefix = "");
+            void loadFromSmurf(std::shared_ptr<envire::core::EnvireGraph> graph,
+                                const envire::core::FrameId &parentFrame,
+                                const std::string &filePath,
+                                const base::Position &position = base::Position(0, 0, 0),
+                                const base::Orientation &orientation = base::Orientation(1, 0, 0, 0),
+                                const std::string &prefix = "");
 
         private:
             std::string name;
