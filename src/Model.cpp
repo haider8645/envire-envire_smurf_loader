@@ -479,8 +479,8 @@ namespace envire
                         jointMap["type"] = "Floating";
                     else {
                         jointMap["axis"]["x"] = joint->axis.x;
-                        jointMap["axis"]["y"] = joint->axis.x;
-                        jointMap["axis"]["z"] = joint->axis.x;
+                        jointMap["axis"]["y"] = joint->axis.y;
+                        jointMap["axis"]["z"] = joint->axis.z;
 
                         switch(joint->type)
                         {
