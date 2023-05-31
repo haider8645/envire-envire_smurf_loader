@@ -504,8 +504,12 @@ namespace envire
                             }
                             case urdf::Joint::PRISMATIC:
                             {
-                                LOG_ERROR_S << "NOT IMPLEMENTED Model::loadJoints urdf::Joint::PRISMATIC";
-                                return;
+                                jointMap["type"] = "Prismatic";
+                                jointMap["maxEffort"] = joint->limits->effort;
+                                jointMap["maxVelocity"] = joint->limits->velocity;
+                                jointMap["minPosition"] = joint->limits->lower;
+                                jointMap["maxPosition"] = joint->limits->upper;
+                                break;
                             }
                             break;
                             default: {
@@ -513,6 +517,14 @@ namespace envire
                                 return;
                             }
                         }
+                    }
+                }
+                for (configmaps::ConfigVector::iterator it = smurfMap["joint"].begin(); it != smurfMap["joint"].end(); ++it)
+                {
+                    configmaps::ConfigMap &config = *it;
+                    if (config["name"].toString() == joint->name)
+                    {
+                        jointMap.append(config);
                     }
                 }
 
