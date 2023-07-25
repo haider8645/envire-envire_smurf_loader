@@ -66,9 +66,6 @@ namespace envire
 
             urdfModel = parseFile(smurfMap, rootFolder, fileName, true);
 
-            //std::cout << "---- config map: " << std::endl;
-            //std::cout << smurfMap.toJsonString() << std::endl;
-
             // Get URDF file path
             configmaps::ConfigVector::iterator it;
             for (it = smurfMap["files"].begin(); it != smurfMap["files"].end(); ++it)
@@ -98,8 +95,6 @@ namespace envire
             graph->addFrame(worldFrame);
             envire::core::Transform initPose(position, orientation);
             graph->addTransform(parentFrame, worldFrame, initPose);
-
-            std::cout << "------------- ADD WORLD FRAME " << worldFrame << std::endl;
 
             // add world into the world frame
             configmaps::ConfigMap worldMap;
@@ -209,11 +204,20 @@ namespace envire
 
         void Model::loadVisuals(std::shared_ptr<envire::core::EnvireGraph> graph, urdf::LinkSharedPtr link, envire::core::FrameId linkFrame) {
             // TODO: check if only one visual is available, will it be stored in array or not
+            unsigned int uid = 0;
             for(urdf::VisualSharedPtr visual : link->visual_array)
             {
+                std::string visualName;
+                if (visual->name.empty())
+                {
+                    visualName = linkFrame + "_" + std::to_string(uid);
+                    uid++;
+                }
+                else
+                    visualName = prefix + visual->name;
+
                 // add visual frame
-                // TODO: if name of visual is empty
-                envire::core::FrameId visualFrame = linkFrame + "_" + visual->name + "_" + "visual";
+                envire::core::FrameId visualFrame = visualName + "_" + "visual";
                 graph->addFrame(visualFrame);
 
                 envire::core::Transform tf = convertPoseToTransform(visual->origin);
@@ -268,10 +272,20 @@ namespace envire
 
         void Model::loadCollisions(std::shared_ptr<envire::core::EnvireGraph> graph, urdf::LinkSharedPtr link, envire::core::FrameId linkFrame) {
             // TODO: check if only one collision is available, will it be stored in array or not
+            unsigned int uid = 0;
             for(urdf::CollisionSharedPtr collision : link->collision_array)
             {
+                std::string collisionName;
+                if (collision->name.empty())
+                {
+                    collisionName = linkFrame + "_" + std::to_string(uid);
+                    uid++;
+                }
+                else
+                    collisionName = prefix + collision->name;
+
                 // add collision frame
-                envire::core::FrameId collisionFrame = linkFrame + "_" + collision->name + "_" + "collision";;
+                envire::core::FrameId collisionFrame = collisionName + "_" + "collision";;
                 graph->addFrame(collisionFrame);
 
                 envire::core::Transform tf = convertPoseToTransform(collision->origin);
@@ -292,8 +306,8 @@ namespace envire
                 }
 
                 // fill the config with collision information
-                collisionMap["name"] = collision->name;
-                collisionMap["link"] = link->name;
+                collisionMap["name"] = collisionName;
+                collisionMap["link"] = prefix + link->name;
 
                 // add geometry information
                 if (fillGeometryConfig(collision->geometry, collisionMap) == false)
@@ -328,7 +342,7 @@ namespace envire
 
             // fill the config with inertia information
             configmaps::ConfigMap inertiaMap;
-            inertiaMap["name"] = link->name;
+            inertiaMap["name"] = prefix + link->name;
             inertiaMap["mass"] = urdfInetrial->mass;
             inertiaMap["xx"] = urdfInetrial->ixx;
             inertiaMap["xy"] = urdfInetrial->ixy;
@@ -352,9 +366,10 @@ namespace envire
             for (configmaps::ConfigVector::iterator it = smurfMap["motors"].begin(); it != smurfMap["motors"].end(); ++it)
             {
                 configmaps::ConfigMap &motorMap = *it;
+                motorMap["name"] = prefix + motorMap["name"].toString();
+                motorMap["joint"] = prefix + motorMap["joint"].toString();
 
-                std::string jointName = motorMap["joint"].toString();
-                envire::core::FrameId jointFrame(prefix + jointName + "_joint");
+                envire::core::FrameId jointFrame(motorMap["joint"].toString() + "_joint");
 
                 if (!graph->containsFrame(jointFrame)) {
                     LOG_ERROR_S << "Can not add motor " << motorMap["name"].toString()
@@ -378,9 +393,10 @@ namespace envire
             for (configmaps::ConfigVector::iterator it = smurfMap["sensors"].begin(); it != smurfMap["sensors"].end(); ++it)
             {
                 configmaps::ConfigMap &sensorMap = *it;
+                sensorMap["name"] = prefix + sensorMap["name"].toString();
+                sensorMap["link"] = prefix + sensorMap["link"].toString();
 
-                std::string linkName = sensorMap["link"].toString();
-                envire::core::FrameId linkFrame(prefix + linkName);
+                envire::core::FrameId linkFrame(sensorMap["link"].toString());
 
                 if (!graph->containsFrame(linkFrame)) {
                     LOG_ERROR_S << "Can not add sensor " << sensorMap["name"].toString()
@@ -460,12 +476,24 @@ namespace envire
             for(std::pair<std::string, urdf::JointSharedPtr> jointPair: urdfModel->joints_)
             {
                 urdf::JointSharedPtr joint = jointPair.second;
+
+                configmaps::ConfigMap jointMap;
+
+                // note: the keys of jointMap, that were set before, may be overwriten here
+                for (configmaps::ConfigVector::iterator it = smurfMap["joint"].begin(); it != smurfMap["joint"].end(); ++it)
+                {
+                    configmaps::ConfigMap &config = *it;
+                    if (config["name"].toString() == joint->name)
+                    {
+                        jointMap.append(config);
+                    }
+                }
+
+                jointMap["name"] = prefix + joint->name;
+
                 envire::core::FrameId sourceFrame(prefix + joint->parent_link_name);
                 envire::core::FrameId targetFrame(prefix + joint->child_link_name);
                 envire::core::FrameId jointFrame;
-
-                configmaps::ConfigMap jointMap;
-                jointMap["name"] = joint->name;
 
                 if (joint->type == urdf::Joint::FIXED)
                 {
@@ -475,7 +503,7 @@ namespace envire
 
                 } else {
                     // the dynamic joint will be added to the additional joint frame btw source und target frame
-                    jointFrame = envire::core::FrameId(prefix + joint->name + "_joint");
+                    jointFrame = envire::core::FrameId(jointMap["name"].toString() + "_joint");
 
                     if (joint->type == urdf::Joint::FLOATING)
                         jointMap["type"] = "Floating";
@@ -517,14 +545,6 @@ namespace envire
                                 return;
                             }
                         }
-                    }
-                }
-                for (configmaps::ConfigVector::iterator it = smurfMap["joint"].begin(); it != smurfMap["joint"].end(); ++it)
-                {
-                    configmaps::ConfigMap &config = *it;
-                    if (config["name"].toString() == joint->name)
-                    {
-                        jointMap.append(config);
                     }
                 }
 
