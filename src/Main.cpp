@@ -7,14 +7,15 @@
 #include <envire_core/graph/GraphDrawing.hpp>
 
 
-void parse_args(int argc, char** argv, std::string& smurf_file, std::string& what, std::string& out)
+void parse_args(int argc, char** argv, std::string& smurf_file, std::string& what, std::string& out, std::string& prefix)
 {
     namespace po = boost::program_options;
     // Declare the supported options.
     po::options_description desc("Allowed options");
     desc.add_options()
-            ("help",      "Produce help message")
-            ("out",       po::value<std::string>(&out), "Output YAML file with the resulting information")
+            ("help",   "Produce help message")
+            ("out",    po::value<std::string>(&out), "Output YAML file with the resulting information")
+            ("prefix", po::value<std::string>(&prefix), "Output YAML file with the resulting information")
             ;
     //These arguments are positional and thuis should not be show to the user
     po::options_description hidden("Hidden");
@@ -54,15 +55,15 @@ void parse_args(int argc, char** argv, std::string& smurf_file, std::string& wha
 
 int main(int argc, char** argv)
 {
-    std::string smurf_file = "", what = "", out = "";
-    parse_args(argc, argv, smurf_file, what, out);
+    std::string smurf_file = "", what = "", out = "", prefix = "";
+    parse_args(argc, argv, smurf_file, what, out, prefix);
 
     std::shared_ptr<envire::core::EnvireGraph> graph = std::make_shared<envire::core::EnvireGraph>();
     envire::core::FrameId rootFrame("INIT_FRAME");
     graph->addFrame(rootFrame);
 
     envire::smurf_loader::Model model;
-    model.loadFromSmurf(graph, rootFrame, smurf_file);
+    model.loadFromSmurf(graph, rootFrame, smurf_file, base::Position(0, 0, 0), base::Orientation(1, 0, 0, 0), prefix);
 
     configmaps::ConfigMap mmap;
     configmaps::ConfigVector vect;
