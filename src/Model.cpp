@@ -378,7 +378,13 @@ namespace envire
                 }
 
                 // create and add into the graph envire item with the object corresponding to config type
-                std::string className(MOTOR_NAMESPACE + motorMap["type"].toString());
+                std::string className = motorMap["type"].toString();
+                // convert specific types from sneak case to camel case
+                if(className == "direct_effort")
+                {
+                    className = "DirectEffort";
+                }
+                className  = MOTOR_NAMESPACE + className;
                 envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, motorMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add motor " << motorMap["name"].toString()
