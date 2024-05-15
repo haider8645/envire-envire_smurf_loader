@@ -3,18 +3,18 @@
 #include <boost/filesystem.hpp>
 #include <urdf_parser/urdf_parser.h>
 
-#include <envire_base_types/registration/TypeCreatorFactory.hpp>
+#include <envire_types/registration/TypeCreatorFactory.hpp>
 
 #include <base-logging/Logging.hpp>
 
 // TODO: add function or macro to generate the names for frames
 // joints, links, visual, collisions, motor and etc
 
-#define BASE_TYPES_NAMESPACE "envire::base_types::"
-#define GEOMETRY_NAMESPACE "envire::base_types::geometry::"
-#define JOINT_NAMESPACE "envire::base_types::joints::"
-#define MOTOR_NAMESPACE "envire::base_types::motors::"
-#define SENSOR_NAMESPACE "envire::base_types::sensors::"
+#define BASE_TYPES_NAMESPACE "envire::types::"
+#define GEOMETRY_NAMESPACE "envire::types::geometry::"
+#define JOINT_NAMESPACE "envire::types::joints::"
+#define MOTOR_NAMESPACE "envire::types::motors::"
+#define SENSOR_NAMESPACE "envire::types::sensors::"
 
 namespace envire
 {
@@ -101,7 +101,7 @@ namespace envire
             worldMap["name"] = worldFrame;
             worldMap["prefix"] = prefix;
             std::string className(BASE_TYPES_NAMESPACE + std::string("World"));
-            envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, worldMap);
+            envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, worldMap);
             graph->addItemToFrame(worldFrame, item);
 
             loadStructure(graph, worldFrame);
@@ -187,7 +187,7 @@ namespace envire
                 linkMap["name"] = linkFrame;
 
                 std::string className(BASE_TYPES_NAMESPACE + std::string("Link"));
-                envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, linkMap);
+                envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, linkMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add link " << linkMap["name"].toString()
                                 << ", probably the link type " << className << " is not registered.";
@@ -259,7 +259,7 @@ namespace envire
 
                 // create and add into the graph envire item with the object corresponding to config type
                 std::string className(GEOMETRY_NAMESPACE + visualMap["type"].toString());
-                envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, visualMap);
+                envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, visualMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add visual " << visualMap["name"].toString()
                                 << ", probably the visual type " << visualMap["type"].toString() << " is not registered.";
@@ -315,7 +315,7 @@ namespace envire
 
                 // create and add into the graph envire item with the object corresponding to config type
                 std::string className(GEOMETRY_NAMESPACE + collisionMap["type"].toString());
-                envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, collisionMap);
+                envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, collisionMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add collision " << collisionMap["name"].toString()
                                 << ", probably the collision type " << collisionMap["type"].toString() << " is not registered.";
@@ -353,7 +353,7 @@ namespace envire
 
             // create and add into the graph envire item with the object corresponding to config type
             std::string className(BASE_TYPES_NAMESPACE + std::string("Inertial"));
-            envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, inertiaMap);
+            envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, inertiaMap);
             if (!item) {
                 LOG_ERROR_S << "Can not add inertia " << inertiaMap["name"].toString()
                             << ", probably the inertia type " << className << " is not registered.";
@@ -385,7 +385,7 @@ namespace envire
                     className = "DirectEffort";
                 }
                 className  = MOTOR_NAMESPACE + className;
-                envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, motorMap);
+                envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, motorMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add motor " << motorMap["name"].toString()
                                 << ", probably the motor type " << motorMap["type"].toString() << " is not registered.";
@@ -412,7 +412,7 @@ namespace envire
 
                 // create and add into the graph envire item with the object corresponding to config type
                 std::string className(SENSOR_NAMESPACE + sensorMap["type"].toString());
-                envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, sensorMap);
+                envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, sensorMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add sensor " << sensorMap["name"].toString()
                                 << ", probably the sensor type " << sensorMap["type"].toString() << " is not registered.";
@@ -563,7 +563,7 @@ namespace envire
 
                 // create and add into the graph envire item with the object corresponding to config type
                 std::string className(JOINT_NAMESPACE + jointMap["type"].toString());
-                envire::core::ItemBase::Ptr item = envire::base_types::TypeCreatorFactory::createItem(className, jointMap);
+                envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, jointMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add joint " << jointMap["name"].toString()
                                 << ", probably the joint type " << jointMap["type"].toString() << " is not registered.";

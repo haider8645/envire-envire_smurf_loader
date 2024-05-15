@@ -9,7 +9,7 @@ rock_library(envire_smurf_loader
         base-lib
         urdfdom
         envire_core
-       envire_base_types
+        envire_types
     DEPS
         Boost::filesystem
         Boost::system
