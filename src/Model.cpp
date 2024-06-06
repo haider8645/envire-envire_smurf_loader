@@ -384,6 +384,10 @@ namespace envire
                 {
                     className = "DirectEffort";
                 }
+                if(className == "ff_torque")
+                {
+                    className = "FeedForwardEffort";
+                }
                 className  = MOTOR_NAMESPACE + className;
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, motorMap);
                 if (!item) {
