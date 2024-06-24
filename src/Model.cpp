@@ -406,6 +406,11 @@ namespace envire
                 sensorMap["name"] = prefix + sensorMap["name"].toString();
                 sensorMap["link"] = prefix + sensorMap["link"].toString();
 
+                if(sensorMap.hasKey("joint"))
+                {
+                    sensorMap["joint"] = prefix + sensorMap["joint"].toString();
+                }
+
                 envire::core::FrameId linkFrame(sensorMap["link"].toString());
 
                 if (!graph->containsFrame(linkFrame)) {
