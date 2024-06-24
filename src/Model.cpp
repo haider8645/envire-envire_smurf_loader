@@ -420,12 +420,17 @@ namespace envire
                 }
 
                 // create and add into the graph envire item with the object corresponding to config type
-                std::string className(SENSOR_NAMESPACE + sensorMap["type"].toString());
+                std::string className(sensorMap["type"].toString());
+                if(className == "Joint6DOF")
+                {
+                    className = "Joint6DOFSensor";
+                }
+                className  = SENSOR_NAMESPACE + className;
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, sensorMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add sensor " << sensorMap["name"].toString()
                                 << ", probably the sensor type " << sensorMap["type"].toString() << " is not registered.";
-                    return;
+                    continue;
                 }
                 graph->addItemToFrame(linkFrame, item);
             }
