@@ -366,6 +366,7 @@ namespace envire
             for (configmaps::ConfigVector::iterator it = smurfMap["motors"].begin(); it != smurfMap["motors"].end(); ++it)
             {
                 configmaps::ConfigMap &motorMap = *it;
+
                 motorMap["name"] = prefix + motorMap["name"].toString();
                 motorMap["joint"] = prefix + motorMap["joint"].toString();
 
@@ -622,7 +623,7 @@ namespace envire
                 else if (filepath.extension() == ".yml")
                 {
                     configmaps::ConfigMap tmpconfig =
-                        configmaps::ConfigMap::fromYamlFile(path + filepath.generic_string());
+                        configmaps::ConfigMap::fromYamlFile(path + filepath.generic_string(), expandURIs);
                     configmaps::ConfigMap::iterator mit = tmpconfig.begin();
                     for (; mit != tmpconfig.end(); ++mit)
                     {
