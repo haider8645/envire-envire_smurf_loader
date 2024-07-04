@@ -22,6 +22,12 @@
 namespace envire {
     namespace smurf_loader
     {
+        extern const std::string base_types_namespace;
+        extern const std::string geometry_namespace;
+        extern const std::string joint_namespace;
+        extern const std::string motor_namespace;
+        extern const std::string sensor_namespace;
+
         class Model
         {
         public:

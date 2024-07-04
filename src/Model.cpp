@@ -10,16 +10,15 @@
 // TODO: add function or macro to generate the names for frames
 // joints, links, visual, collisions, motor and etc
 
-#define BASE_TYPES_NAMESPACE "envire::types::"
-#define GEOMETRY_NAMESPACE "envire::types::geometry::"
-#define JOINT_NAMESPACE "envire::types::joints::"
-#define MOTOR_NAMESPACE "envire::types::motors::"
-#define SENSOR_NAMESPACE "envire::types::sensors::"
-
 namespace envire
 {
     namespace smurf_loader
     {
+        const std::string base_types_namespace = "envire::types::";
+        const std::string geometry_namespace = "envire::types::geometry::";
+        const std::string joint_namespace = "envire::types::joints::";
+        const std::string motor_namespace = "envire::types::motors::";
+        const std::string sensor_namespace = "envire::types::sensors::";
 
         Model::Model() {}
 
@@ -100,7 +99,7 @@ namespace envire
             configmaps::ConfigMap worldMap;
             worldMap["name"] = worldFrame;
             worldMap["prefix"] = prefix;
-            std::string className(BASE_TYPES_NAMESPACE + std::string("World"));
+            std::string className(base_types_namespace + std::string("World"));
             envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, worldMap);
             graph->addItemToFrame(worldFrame, item);
 
@@ -186,7 +185,7 @@ namespace envire
                 configmaps::ConfigMap linkMap;
                 linkMap["name"] = linkFrame;
 
-                std::string className(BASE_TYPES_NAMESPACE + std::string("Link"));
+                std::string className(base_types_namespace + std::string("Link"));
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, linkMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add link " << linkMap["name"].toString()
@@ -258,7 +257,7 @@ namespace envire
                 }
 
                 // create and add into the graph envire item with the object corresponding to config type
-                std::string className(GEOMETRY_NAMESPACE + visualMap["type"].toString());
+                std::string className(geometry_namespace + visualMap["type"].toString());
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, visualMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add visual " << visualMap["name"].toString()
@@ -314,7 +313,7 @@ namespace envire
                     return;
 
                 // create and add into the graph envire item with the object corresponding to config type
-                std::string className(GEOMETRY_NAMESPACE + collisionMap["type"].toString());
+                std::string className(geometry_namespace + collisionMap["type"].toString());
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, collisionMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add collision " << collisionMap["name"].toString()
@@ -352,7 +351,7 @@ namespace envire
             inertiaMap["zz"] = urdfInetrial->izz;
 
             // create and add into the graph envire item with the object corresponding to config type
-            std::string className(BASE_TYPES_NAMESPACE + std::string("Inertial"));
+            std::string className(base_types_namespace + std::string("Inertial"));
             envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, inertiaMap);
             if (!item) {
                 LOG_ERROR_S << "Can not add inertia " << inertiaMap["name"].toString()
@@ -389,7 +388,7 @@ namespace envire
                 {
                     className = "FeedForwardEffort";
                 }
-                className  = MOTOR_NAMESPACE + className;
+                className  = motor_namespace + className;
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, motorMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add motor " << motorMap["name"].toString()
@@ -426,7 +425,7 @@ namespace envire
                 {
                     className = "Joint6DOFSensor";
                 }
-                className  = SENSOR_NAMESPACE + className;
+                className  = sensor_namespace + className;
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, sensorMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add sensor " << sensorMap["name"].toString()
@@ -577,7 +576,7 @@ namespace envire
                 }
 
                 // create and add into the graph envire item with the object corresponding to config type
-                std::string className(JOINT_NAMESPACE + jointMap["type"].toString());
+                std::string className(joint_namespace + jointMap["type"].toString());
                 envire::core::ItemBase::Ptr item = envire::types::TypeCreatorFactory::createItem(className, jointMap);
                 if (!item) {
                     LOG_ERROR_S << "Can not add joint " << jointMap["name"].toString()
