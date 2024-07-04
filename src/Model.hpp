@@ -19,6 +19,12 @@
 // TODO: add material into base envire types property to Geometry
 // TODO: add urdf loader, espeically it is relevant for motors, since all joints information should goes to the motor than
 
+#define BASE_TYPES_NAMESPACE "envire::types::"
+#define GEOMETRY_NAMESPACE "envire::types::geometry::"
+#define JOINT_NAMESPACE "envire::types::joints::"
+#define MOTOR_NAMESPACE "envire::types::motors::"
+#define SENSOR_NAMESPACE "envire::types::sensors::"
+
 namespace envire {
     namespace smurf_loader
     {

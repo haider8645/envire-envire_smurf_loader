@@ -10,12 +10,6 @@
 // TODO: add function or macro to generate the names for frames
 // joints, links, visual, collisions, motor and etc
 
-#define BASE_TYPES_NAMESPACE "envire::types::"
-#define GEOMETRY_NAMESPACE "envire::types::geometry::"
-#define JOINT_NAMESPACE "envire::types::joints::"
-#define MOTOR_NAMESPACE "envire::types::motors::"
-#define SENSOR_NAMESPACE "envire::types::sensors::"
-
 namespace envire
 {
     namespace smurf_loader
