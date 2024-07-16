@@ -464,6 +464,7 @@ namespace envire
                     // create absolute path
                     boost::filesystem::path filePathAbsolute(urdfFilePathAbsolute);
                     std::string rootFolder = filePathAbsolute.parent_path().generic_string();
+                    config["filePrefix"] = rootFolder;
                     // TODO: check if urdfGeom->filename is absolute or relative
                     std::string filename = rootFolder + "/" + urdfGeom->filename;
                     config["filename"] = filename;
